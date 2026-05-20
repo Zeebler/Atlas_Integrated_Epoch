@@ -4,14 +4,13 @@ Atlas Integrated Epoch brings Atlas dungeon maps into the regular Blizzard world
 
 ## Features
 
-- Shows Atlas dungeon maps inside the Blizzard world map
+- Shows Atlas dungeon maps inside the Blizzard world map frame
 - Auto-selects your current dungeon
-- Adds a dungeon selector to the world map
-- Adds a boss list with pagination for large dungeons
+- Adds a dungeon selector to the world map frame (top right)
+- Adds a boss list with pagination for large dungeons like BRD
 - Shows boss loot when AtlasLoot is installed
 - Adds optional trash loot entries when AtlasLoot provides them
 - Supports ElvUI styling when ElvUI world map skinning is enabled
-- Avoids modifying Atlas, AtlasLoot, Blizzard UI files, pfQuest, ElvUI, or Magnify
 
 ## Dependencies
 
