@@ -2,8 +2,6 @@
 
 Atlas Integrated Epoch brings Atlas dungeon maps into the regular Blizzard world map UI for Project Epoch.
 
-I have always used Atlas and AtlasLoot to check dungeon maps and boss loot. After playing Turtle WoW, I got used to dungeon maps being integrated into the main map, so I wanted something similar for Project Epoch. This addon keeps Atlas and AtlasLoot working normally, but also makes their dungeon map and loot information available directly when you press `M`.
-
 ## Features
 
 - Shows Atlas dungeon maps inside the Blizzard world map
@@ -19,12 +17,12 @@ I have always used Atlas and AtlasLoot to check dungeon maps and boss loot. Afte
 
 Required:
 
-- Atlas
+- [Atlas](https://github.com/Raynbock/Atlas-Project-Epoch)
 
 Optional:
 
-- AtlasLoot
-- AtlasLoot_OriginalWoW
+- [AtlasLoot](https://github.com/reneas/AtlaslootProjectEpoch)
+- AtlasLoot_OriginalWoW 
 
 Verified Compatibility:
 
@@ -39,7 +37,9 @@ Verified Compatibility:
 
 ## Install
 
-Place the `Atlas_Integrated_Epoch` folder in:
+Download and install required/optional dependencies.
+
+Place the `Atlas_Integrated_Epoch` folder and dependencies in:
 
 ```text
 World of Warcraft\Interface\AddOns\
