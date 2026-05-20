@@ -1,0 +1,22 @@
+## Interface: 30300
+## Title: Atlas |r|cFF0099FF[Integrated Epoch]|r
+## Notes: Integrates Atlas dungeon maps and optional AtlasLoot data into the world map for Project Epoch.
+## Version: 1.0.0
+## SavedVariables: AtlasIntegratedEpochDB
+## RequiredDeps: Atlas
+## OptionalDeps: AtlasLoot, AtlasLoot_OriginalWoW
+
+Utils.lua
+Locales\enUS.lua
+Debug.lua
+DataRegistry.lua
+DungeonMenu.lua
+Tooltip.lua
+LootPanel.lua
+BossList.lua
+Overlay.lua
+MapIntegration.lua
+Adapters\Atlas.lua
+Adapters\AtlasLoot.lua
+Events.lua
+Core.lua
