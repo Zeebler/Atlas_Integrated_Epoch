@@ -50,9 +50,7 @@ Then enable it from the addon list and reload or restart the game.
 
 This addon does not include Atlas or AtlasLoot data. You must install Atlas separately, and AtlasLoot is required only if you want loot panels.
 
-Live player position is not available on Atlas dungeon maps.
-
-If Atlas and AtlasLoot versions do not match, boss-to-loot mapping may also be wrong in this addon.
+Live player position is not available on Atlas dungeon maps. If Atlas and AtlasLoot versions do not match, boss-to-loot mapping may also be wrong in this addon.
 
 ## Credits
 
