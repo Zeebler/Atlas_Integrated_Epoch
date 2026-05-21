@@ -54,10 +54,10 @@ function MapIntegration:Refresh()
 	end
 
 	if selected and dungeon then
-		EDG.Overlay:SetPfQuestSuppressed(true)
+		EDG.Overlay:SetMapAddonsSuppressed(true)
 		EDG.Overlay:ShowDungeon(dungeon, 1)
 	elseif dungeon and EDG.Utils.IsInDungeon() then
-		EDG.Overlay:SetPfQuestSuppressed(true)
+		EDG.Overlay:SetMapAddonsSuppressed(true)
 		EDG.Overlay:ShowDungeon(dungeon, 1)
 	else
 		EDG.Overlay:Hide()

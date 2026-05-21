@@ -16,6 +16,7 @@ LootPanel.lua
 BossList.lua
 Overlay.lua
 MapIntegration.lua
+Compatibility\MapAddons.lua
 Adapters\Atlas.lua
 Adapters\AtlasLoot.lua
 Events.lua

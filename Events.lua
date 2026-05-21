@@ -11,7 +11,7 @@ EDG.Events.suppressor:SetScript("OnUpdate", function(frame)
 		return
 	end
 	if EDG.Utils.IsInDungeon() and WorldMapFrame and WorldMapFrame:IsShown() and EDG.Overlay then
-		EDG.Overlay:SetPfQuestSuppressed(true)
+		EDG.Overlay:SetMapAddonsSuppressed(true)
 	end
 end)
 
@@ -28,7 +28,7 @@ end
 
 function EDG.Events:SuppressDungeonMapNoise()
 	if not EDG.Utils.IsInDungeon() or not EDG.Overlay then return end
-	EDG.Overlay:SetPfQuestSuppressed(true)
+	EDG.Overlay:SetMapAddonsSuppressed(true)
 	if GetTime then
 		self.suppressor.untilTime = GetTime() + 2
 		self.suppressor:Show()

@@ -71,7 +71,7 @@ function Overlay:Create()
 	frame:SetScript("OnUpdate", function(_, elapsed)
 		if EDG.DungeonMenu and EDG.DungeonMenu:IsOpen() then return end
 		Overlay:RefreshLayout()
-		Overlay:SetPfQuestSuppressed(true)
+		Overlay:SetMapAddonsSuppressed(true)
 	end)
 
 	frame.bg = frame:CreateTexture(nil, "BACKGROUND")
@@ -230,92 +230,9 @@ function Overlay:RefreshLayout(force)
 	self:RefreshPins()
 end
 
-local function RememberAndHide(store, frame)
-	if not frame or not frame.Hide then return end
-	if store[frame] == nil then
-		store[frame] = not frame.IsShown or frame:IsShown()
-	end
-	frame:Hide()
-end
-
-function Overlay:SetPfQuestSuppressed(suppressed)
-	self.pfQuestHidden = self.pfQuestHidden or {}
-
-	if suppressed then
-		local store = self.pfQuestHidden
-
-		for _, name in ipairs({
-			"pfQuestMapDropdown",
-			"pfQuestMapDropdownButton",
-			"pfQuestRouteDisplay",
-		}) do
-			RememberAndHide(store, getglobal(name))
-		end
-
-		local dropdown = getglobal("pfQuestMapDropdown")
-		if dropdown then
-			local base = dropdown:GetName()
-			for _, suffix in ipairs({ "Left", "Middle", "Right", "Text", "Button", "Icon" }) do
-				RememberAndHide(store, getglobal(base..suffix))
-			end
-		end
-
-		if WorldMapButton and WorldMapButton.routes then
-			RememberAndHide(store, WorldMapButton.routes)
-		end
-
-		if pfMap and pfMap.pins then
-			for _, pin in pairs(pfMap.pins) do
-				RememberAndHide(store, pin)
-			end
-		end
-
-		if WorldMapButton and WorldMapButton.GetChildren then
-			for _, child in ipairs({ WorldMapButton:GetChildren() }) do
-				local name = child.GetName and child:GetName()
-				if name and string.find(name, "^pfQuestContinentPin") then
-					RememberAndHide(store, child)
-				elseif name and (
-					string.find(name, "^WorldMap") or
-					string.find(name, "^QuestPOI") or
-					string.find(name, "^Map") or
-					string.find(name, "^poi")
-				) then
-					RememberAndHide(store, child)
-				end
-			end
-		end
-
-		for _, frameName in ipairs({
-			"WorldMapPlayer",
-			"WorldMapPlayerLower",
-			"WorldMapPlayerUpper",
-			"WorldMapCorpse",
-			"WorldMapCorpseLower",
-			"WorldMapCorpseUpper",
-			"WorldMapPOIFrame",
-			"WorldMapQuestFrame",
-			"WorldMapBlobFrame",
-			"WorldMapFrameAreaLabel",
-			"WorldMapFrameAreaDescription",
-			"WorldMapZoneInfo",
-		}) do
-			RememberAndHide(store, getglobal(frameName))
-		end
-
-		if pfMap and pfMap.tooltip then
-			RememberAndHide(store, pfMap.tooltip)
-		end
-	else
-		for frame, wasShown in pairs(self.pfQuestHidden) do
-			if frame and wasShown and frame.Show then
-				frame:Show()
-			end
-		end
-		self.pfQuestHidden = {}
-		if pfMap and pfMap.UpdateNodes and WorldMapFrame and WorldMapFrame:IsShown() then
-			pfMap:UpdateNodes()
-		end
+function Overlay:SetMapAddonsSuppressed(suppressed)
+	if EDG.Compatibility and EDG.Compatibility.SetWorldMapAddonsSuppressed then
+		EDG.Compatibility:SetWorldMapAddonsSuppressed(suppressed)
 	end
 end
 
@@ -344,7 +261,7 @@ function Overlay:ShowDungeon(dungeon, floorIndex)
 	frame.mapTexture:SetTexture(floor.texture or "")
 	frame:Show()
 	self:RefreshLayout(true)
-	self:SetPfQuestSuppressed(true)
+	self:SetMapAddonsSuppressed(true)
 
 	self:RefreshFloorControls()
 	self:RefreshPins()
@@ -355,7 +272,7 @@ end
 
 function Overlay:Hide()
 	if self.frame then self.frame:Hide() end
-	self:SetPfQuestSuppressed(false)
+	self:SetMapAddonsSuppressed(false)
 	self.selectedBoss = nil
 	self.currentDungeon = nil
 	self.currentFloor = nil
