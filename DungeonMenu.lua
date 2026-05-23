@@ -84,6 +84,7 @@ function DungeonMenu:Initialize()
 			info.checked = AtlasIntegratedEpochDB.selectedDungeon == dungeonId
 			info.func = function()
 				AtlasIntegratedEpochDB.selectedDungeon = dungeonId
+				EDG.DataRegistry:RememberCurrentInstanceChoice(dungeonId)
 				DungeonMenu:RefreshText()
 				EDG.MapIntegration:Refresh()
 			end

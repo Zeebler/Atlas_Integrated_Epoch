@@ -4,26 +4,45 @@ local EDG = AtlasIntegratedEpoch
 EDG.MapIntegration = {}
 local MapIntegration = EDG.MapIntegration
 
+function MapIntegration:ResetToCurrentZone()
+	if AtlasIntegratedEpochDB then
+		AtlasIntegratedEpochDB.selectedDungeon = nil
+	end
+	if EDG.Overlay then
+		EDG.Overlay:Hide()
+	end
+	if EDG.DungeonMenu then
+		EDG.DungeonMenu:RefreshText()
+	end
+end
+
 function MapIntegration:Initialize()
 	if self.initialized then return end
 	self.initialized = true
 
 	if WorldMapFrame then
 		WorldMapFrame:HookScript("OnShow", function()
-			if AtlasIntegratedEpochDB then
-				AtlasIntegratedEpochDB.selectedDungeon = nil
-			end
+			MapIntegration:ResetToCurrentZone()
 			if EDG.DungeonMenu then
 				EDG.DungeonMenu:SetShown(true)
-				EDG.DungeonMenu:RefreshText()
 			end
 			MapIntegration:Refresh()
+			if EDG.Events and EDG.Events.StartRefreshRetry then
+				EDG.Events:StartRefreshRetry()
+			end
 		end)
 		WorldMapFrame:HookScript("OnHide", function()
 			if EDG.DungeonMenu then
 				EDG.DungeonMenu:SetShown(false)
 			end
 			EDG.Overlay:Hide()
+		end)
+	end
+
+	local zoomOut = WorldMapZoomOutButton or getglobal("WorldMapZoomOutButton")
+	if zoomOut and zoomOut.HookScript then
+		zoomOut:HookScript("OnClick", function()
+			MapIntegration:ResetToCurrentZone()
 		end)
 	end
 end
@@ -49,6 +68,10 @@ function MapIntegration:Refresh()
 
 	local selected = EDG.DungeonMenu and EDG.DungeonMenu:GetSelectedDungeon()
 	local dungeon = selected or (EDG.DungeonMenu and EDG.DungeonMenu:GetCurrentZoneDungeon()) or EDG.DataRegistry:GetDungeonForCurrentInstance()
+	local ambiguousOptions, ambiguousInstanceName
+	if not dungeon and EDG.Utils.IsInDungeon() and EDG.DataRegistry.GetAmbiguousCurrentInstanceOptions then
+		ambiguousOptions, ambiguousInstanceName = EDG.DataRegistry:GetAmbiguousCurrentInstanceOptions()
+	end
 	if EDG.DungeonMenu then
 		EDG.DungeonMenu:RefreshText()
 	end
@@ -59,6 +82,9 @@ function MapIntegration:Refresh()
 	elseif dungeon and EDG.Utils.IsInDungeon() then
 		EDG.Overlay:SetMapAddonsSuppressed(true)
 		EDG.Overlay:ShowDungeon(dungeon, 1)
+	elseif ambiguousOptions then
+		EDG.Overlay:SetMapAddonsSuppressed(true)
+		EDG.Overlay:ShowAmbiguousInstance(ambiguousOptions, ambiguousInstanceName)
 	else
 		EDG.Overlay:Hide()
 	end

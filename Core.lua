@@ -111,6 +111,18 @@ function EDG.Core:ADDON_LOADED(addon)
 			EDG.Debug.Print(AtlasIntegratedEpochDB.hideBossListWhenMinimized and T("COMPACT_BOSS_LIST_ON") or T("COMPACT_BOSS_LIST_OFF"))
 		elseif msg == "options" or msg == "config" then
 			OpenOptionsPanel()
+		elseif msg == "where" or msg == "zone" then
+			local info = EDG.DataRegistry:GetCurrentLocationDebugInfo()
+			EDG.Debug.Print("Instance: "..(info.instance ~= "" and info.instance or "N/A"))
+			EDG.Debug.Print("Real zone: "..(info.realZone ~= "" and info.realZone or "N/A"))
+			EDG.Debug.Print("Zone: "..(info.zone ~= "" and info.zone or "N/A"))
+			EDG.Debug.Print("Subzone: "..(info.subZone ~= "" and info.subZone or "N/A"))
+			EDG.Debug.Print("Minimap zone: "..(info.minimapZone ~= "" and info.minimapZone or "N/A"))
+			EDG.Debug.Print("In instance: "..info.inInstance.." ("..(info.instanceType ~= "" and info.instanceType or "N/A")..")")
+			EDG.Debug.Print("Instance ID: "..(tostring(info.instanceId) ~= "" and tostring(info.instanceId) or "N/A")..", LFG ID: "..(tostring(info.lfgDungeonId) ~= "" and tostring(info.lfgDungeonId) or "N/A"))
+			EDG.Debug.Print("Atlas map: "..(info.atlasMapId ~= "" and info.atlasMapId or "N/A"))
+			EDG.Debug.Print("Remembered dungeon: "..(info.rememberedDungeon ~= "" and info.rememberedDungeon or "N/A"))
+			EDG.Debug.Print("Resolved dungeon: "..(info.dungeonName ~= "" and info.dungeonName or "N/A"))
 		else
 			EDG.Debug.Print(T("SLASH_HELP"))
 		end

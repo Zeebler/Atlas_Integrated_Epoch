@@ -14,6 +14,22 @@ local aliases = {
 	thestockades = "TheStockade",
 	stormwindstockade = "TheStockade",
 	stormwindstockades = "TheStockade",
+	armory = "SMArmory",
+	sarmory = "SMArmory",
+	scarletarmory = "SMArmory",
+	scarletmonasteryarmory = "SMArmory",
+	cathedral = "SMCathedral",
+	cath = "SMCathedral",
+	scarletcathedral = "SMCathedral",
+	scarletmonasterycathedral = "SMCathedral",
+	graveyard = "SMGraveyard",
+	gy = "SMGraveyard",
+	scarletgraveyard = "SMGraveyard",
+	scarletmonasterygraveyard = "SMGraveyard",
+	library = "SMLibrary",
+	lib = "SMLibrary",
+	scarletlibrary = "SMLibrary",
+	scarletmonasterylibrary = "SMLibrary",
 }
 
 local excludedAtlasMapIds
@@ -34,6 +50,8 @@ local function BuildExcludedAtlasMapIds()
 				or string.find(key, "dungeon loc")
 				or string.find(key, "dungeon locations")
 				or string.find(key, "battleground")
+				or string.find(key, "pvp")
+				or string.find(key, "arena")
 			then
 				for mapId in pairs(ATLAS_PLUGIN_DATA[index] or {}) do
 					excludedAtlasMapIds[mapId] = true
@@ -101,6 +119,8 @@ local function IsDungeonMap(id, zoneName, bosses)
 		or string.find(lowerId, "kazzak")
 		or string.find(lowerId, "outdoor")
 		or string.find(lowerId, "battleground")
+		or string.find(lowerId, "pvp")
+		or string.find(lowerId, "arena")
 		or lowerZone == "kalimdor"
 		or lowerZone == "eastern kingdoms"
 	then

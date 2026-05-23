@@ -56,6 +56,26 @@ local function ApplySidePanelStyle(panel)
 	end
 end
 
+local function StyleClassicButton(button, hover)
+	if not button or not button.SetBackdrop then return end
+
+	button:SetBackdrop({
+		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		tile = true,
+		tileSize = 16,
+		edgeSize = 12,
+		insets = { left = 4, right = 4, top = 4, bottom = 4 },
+	})
+	if hover then
+		button:SetBackdropColor(0.48, 0.04, 0.02, 0.96)
+		button:SetBackdropBorderColor(1, 0.72, 0.12, 1)
+	else
+		button:SetBackdropColor(0.28, 0.01, 0.01, 0.94)
+		button:SetBackdropBorderColor(0.72, 0.48, 0.2, 0.95)
+	end
+end
+
 function Overlay:Create()
 	if self.frame then return self.frame end
 
@@ -185,6 +205,38 @@ function Overlay:Create()
 	frame.pinLayer:SetPoint("BOTTOMRIGHT", frame.mapArea, "BOTTOMRIGHT", -4, 4)
 	frame.pinLayer:SetFrameLevel(frame.mapArea:GetFrameLevel() + 5)
 
+	frame.ambiguousChooser = CreateFrame("Frame", "AtlasIntegratedEpochAmbiguousChooser", frame.mapArea)
+	frame.ambiguousChooser:SetWidth(430)
+	frame.ambiguousChooser:SetHeight(270)
+	frame.ambiguousChooser:SetPoint("CENTER", frame.mapArea, "CENTER", 0, 10)
+	frame.ambiguousChooser:SetFrameLevel(frame.mapArea:GetFrameLevel() + 50)
+	frame.ambiguousChooser:EnableMouse(true)
+	if frame.ambiguousChooser.SetBackdrop then
+		frame.ambiguousChooser:SetBackdrop({
+			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+			tile = true,
+			tileSize = 16,
+			edgeSize = 12,
+			insets = { left = 3, right = 3, top = 3, bottom = 3 },
+		})
+		frame.ambiguousChooser:SetBackdropColor(0.02, 0.02, 0.02, 0.92)
+		frame.ambiguousChooser:SetBackdropBorderColor(0.45, 0.45, 0.45, 0.95)
+	end
+	frame.ambiguousChooser.title = frame.ambiguousChooser:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	frame.ambiguousChooser.title:SetPoint("TOP", frame.ambiguousChooser, "TOP", 0, -18)
+	frame.ambiguousChooser.title:SetText(T("AMBIGUOUS_DUNGEON_TITLE"))
+	frame.ambiguousChooser.body = frame.ambiguousChooser:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	frame.ambiguousChooser.body:SetPoint("TOPLEFT", frame.ambiguousChooser, "TOPLEFT", 24, -48)
+	frame.ambiguousChooser.body:SetPoint("TOPRIGHT", frame.ambiguousChooser, "TOPRIGHT", -24, -48)
+	frame.ambiguousChooser.body:SetHeight(34)
+	frame.ambiguousChooser.body:SetJustifyH("CENTER")
+	if frame.ambiguousChooser.body.SetWordWrap then frame.ambiguousChooser.body:SetWordWrap(true) end
+	if frame.ambiguousChooser.body.SetNonSpaceWrap then frame.ambiguousChooser.body:SetNonSpaceWrap(false) end
+	frame.ambiguousChooser.body:SetText(T("AMBIGUOUS_DUNGEON_BODY"))
+	frame.ambiguousChooser.buttons = {}
+	frame.ambiguousChooser:Hide()
+
 	local bossList = EDG.BossList:Create(frame.side)
 	bossList:SetFrameLevel(frame.side:GetFrameLevel() + 20)
 	bossList:SetPoint("TOPLEFT", frame.side, "TOPLEFT", 8, -10)
@@ -257,8 +309,12 @@ function Overlay:ShowDungeon(dungeon, floorIndex)
 	self.currentDungeon = dungeon
 	self.currentFloor = floor
 	self.currentFloorIndex = requestedIndex
+	if frame.ambiguousChooser then frame.ambiguousChooser:Hide() end
 	frame.title:SetText(dungeon.name)
 	frame.mapTexture:SetTexture(floor.texture or "")
+	frame.mapTexture:Show()
+	frame.pinLayer:Show()
+	frame.disclaimer:Show()
 	frame:Show()
 	self:RefreshLayout(true)
 	self:SetMapAddonsSuppressed(true)
@@ -268,6 +324,85 @@ function Overlay:ShowDungeon(dungeon, floorIndex)
 	EDG.BossList:SetBosses(dungeon.bosses or {})
 	EDG.BossList:SetSelected(self.selectedBoss)
 	EDG.Debug.Trace("Showing "..dungeon.name)
+end
+
+function Overlay:ShowAmbiguousInstance(options, instanceName)
+	local frame = self:Create()
+	if not frame or not options then return end
+
+	self.currentDungeon = nil
+	self.currentFloor = nil
+	self.currentFloorIndex = nil
+	self.selectedBoss = nil
+	EDG.LootPanel:Hide()
+	EDG.BossList:SetBosses({})
+	EDG.BossList:SetSelected(nil)
+
+	frame.title:SetText(instanceName or T("AMBIGUOUS_DUNGEON_TITLE"))
+	frame.mapTexture:SetTexture(0, 0, 0, 1)
+	frame.mapTexture:Show()
+	frame.pinLayer:Hide()
+	frame.disclaimer:Hide()
+	frame.floorPrev:Hide()
+	frame.floorText:Hide()
+	frame.floorNext:Hide()
+	frame:Show()
+	self:RefreshLayout(true)
+	self:SetMapAddonsSuppressed(true)
+
+	local chooser = frame.ambiguousChooser
+	if not chooser then return end
+	chooser:Show()
+
+	for _, button in ipairs(chooser.buttons or {}) do
+		button:Hide()
+	end
+
+	for index, dungeon in ipairs(options) do
+		local button = chooser.buttons[index]
+		if not button then
+			button = CreateFrame("Button", "AtlasIntegratedEpochAmbiguousChoice"..index, chooser)
+			button:SetWidth(330)
+			button:SetHeight(34)
+			button:SetFrameLevel(chooser:GetFrameLevel() + 5)
+			button:RegisterForClicks("LeftButtonUp")
+			button:SetPoint("TOP", chooser, "TOP", 0, -92 - ((index - 1) * 40))
+			StyleClassicButton(button, false)
+			button.text = button:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+			button.text:SetPoint("TOPLEFT", button, "TOPLEFT", 10, -4)
+			button.text:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -10, 4)
+			button.text:SetJustifyH("CENTER")
+			button.text:SetJustifyV("MIDDLE")
+			if button.text.SetWordWrap then button.text:SetWordWrap(true) end
+			if button.text.SetNonSpaceWrap then button.text:SetNonSpaceWrap(false) end
+			button:SetScript("OnEnter", function(self)
+				StyleClassicButton(self, true)
+				if self.text then self.text:SetTextColor(1, 0.82, 0) end
+			end)
+			button:SetScript("OnLeave", function(self)
+				StyleClassicButton(self, false)
+				if self.text then self.text:SetTextColor(1, 1, 1) end
+			end)
+			button:SetScript("OnClick", function(self)
+				if not self.dungeon then return end
+				if AtlasIntegratedEpochDB then
+					AtlasIntegratedEpochDB.selectedDungeon = nil
+				end
+				Registry:RememberCurrentInstanceChoice(self.dungeon.id)
+				if EDG.DungeonMenu then
+					EDG.DungeonMenu:RefreshText()
+				end
+				Overlay:ShowDungeon(self.dungeon, 1)
+			end)
+			chooser.buttons[index] = button
+		end
+		button.dungeon = dungeon
+		if button.text then
+			button.text:SetText(dungeon.name)
+			button.text:SetTextColor(1, 1, 1)
+		end
+		button:Show()
+	end
 end
 
 function Overlay:Hide()
